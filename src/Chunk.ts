@@ -223,7 +223,7 @@ export default class Chunk {
 					moduleExportNamesByVariable.size === 0 &&
 					module.isUserDefinedEntryPoint &&
 					module.preserveSignature === 'strict' &&
-					this.graph.preserveEntrySignatures === undefined
+					this.graph.unsetOptions.has('preserveEntrySignatures')
 				) {
 					this.graph.options.onwarn({
 						code: 'EMPTY_FACADE',
@@ -272,7 +272,7 @@ export default class Chunk {
 		} else {
 			assignExportsToNames(remainingExports, this.exportsByName);
 		}
-		if (this.graph.preserveModules || (this.facadeModule && this.facadeModule.isEntryPoint))
+		if (this.graph.options.preserveModules || (this.facadeModule && this.facadeModule.isEntryPoint))
 			this.exportMode = getExportMode(this, options, this.facadeModule!.id);
 	}
 
@@ -296,7 +296,7 @@ export default class Chunk {
 			}
 			if (
 				!this.facadeModule &&
-				(this.graph.preserveModules ||
+				(this.graph.options.preserveModules ||
 					module.preserveSignature !== 'strict' ||
 					this.canModuleBeFacade(module, exposedNamespaces))
 			) {
@@ -441,7 +441,7 @@ export default class Chunk {
 	}
 
 	getVariableExportName(variable: Variable): string {
-		if (this.graph.preserveModules && variable instanceof NamespaceVariable) {
+		if (this.graph.options.preserveModules && variable instanceof NamespaceVariable) {
 			return '*';
 		}
 		for (const exportName of Object.keys(this.exportsByName)) {
@@ -483,7 +483,7 @@ export default class Chunk {
 		// for static and dynamic entry points, inline the execution list to avoid loading latency
 		if (
 			options.hoistTransitiveImports !== false &&
-			!this.graph.preserveModules &&
+			!this.graph.options.preserveModules &&
 			this.facadeModule !== null
 		) {
 			for (const dep of this.dependencies) {
@@ -512,7 +512,7 @@ export default class Chunk {
 					this.usedModules.push(module);
 				}
 				const namespace = module.namespace;
-				if (namespace.included && !this.graph.preserveModules) {
+				if (namespace.included && !this.graph.options.preserveModules) {
 					const rendered = namespace.renderBlock(renderOptions);
 					if (namespace.renderFirst()) hoistedSource += n + rendered;
 					else magicString.addSource(new MagicString(rendered));
@@ -633,7 +633,7 @@ export default class Chunk {
 				indentString: this.indentString,
 				intro: addons.intro!,
 				isEntryModuleFacade:
-					this.graph.preserveModules ||
+					this.graph.options.preserveModules ||
 					(this.facadeModule !== null && this.facadeModule.isEntryPoint),
 				namedExportsMode: this.exportMode !== 'default',
 				outro: addons.outro!,
@@ -1060,7 +1060,7 @@ export default class Chunk {
 			usedNames,
 			options.format as string,
 			options.interop !== false,
-			this.graph.preserveModules,
+			this.graph.options.preserveModules,
 			syntheticExports
 		);
 	}
@@ -1075,7 +1075,7 @@ export default class Chunk {
 			if (variable.module && (variable.module as Module).chunk !== this) {
 				this.imports.add(variable);
 				if (
-					!(variable instanceof NamespaceVariable && this.graph.preserveModules) &&
+					!(variable instanceof NamespaceVariable && this.graph.options.preserveModules) &&
 					variable.module instanceof Module
 				) {
 					variable.module.chunk!.exports.add(variable);
@@ -1100,7 +1100,7 @@ export default class Chunk {
 					exportingModule &&
 					exportingModule.chunk &&
 					exportingModule.chunk !== this &&
-					!(importedVariable instanceof NamespaceVariable && this.graph.preserveModules)
+					!(importedVariable instanceof NamespaceVariable && this.graph.options.preserveModules)
 				) {
 					exportingModule.chunk.exports.add(importedVariable);
 					if (isSynthetic) {
