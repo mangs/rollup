@@ -1,4 +1,4 @@
-import * as acorn from 'acorn';
+import * as acorn from 'fork-acorn-optional-chaining';
 import { locate } from 'locate-character';
 import MagicString from 'magic-string';
 import extractAssignedNames from 'rollup-pluginutils/src/extractAssignedNames';
@@ -116,7 +116,7 @@ export interface AstContext {
 }
 
 export const defaultAcornOptions: acorn.Options = {
-	ecmaVersion: 2020,
+	ecmaVersion: 2021 as 2020,
 	preserveParens: false,
 	sourceType: 'module'
 };

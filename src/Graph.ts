@@ -1,7 +1,7 @@
-import * as acorn from 'acorn';
 import injectClassFields from 'acorn-class-fields';
 import injectImportMeta from 'acorn-import-meta';
 import injectStaticClassFeatures from 'acorn-static-class-features';
+import * as acorn from 'fork-acorn-optional-chaining';
 import GlobalScope from './ast/scopes/GlobalScope';
 import { PathTracker } from './ast/utils/PathTracker';
 import Chunk from './Chunk';
